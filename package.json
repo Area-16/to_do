@@ -1,0 +1,58 @@
+{
+  "name": "intelup",
+  "version": "1.0.0",
+  "description": "Intelup back-end technical test",
+  "main": "src/loader.js",
+  "repository": "",
+  "author": "Douglas E Alves",
+  "license": "MIT",
+  "private": false,
+  "engines": {
+    "node": ">= 6.12.0"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/mocha tests/**/*.spec.js --reporter=spec --require babel-register --bail",
+    "test:live": " npm run test -- --watch",
+    "clean": "./node_modules/.bin/rimraf ./dist",
+    "build": "npm run clean && babel src/ -d dist/",
+    "build:start": "npm run build && clear && npm run start",
+    "start": "node ./dist/loader.js",
+    "prod": "./node_modules/.bin/pm2 start ./dist/loader.js --name ToDoAPI",
+    "dev": "./node_modules/.bin/nodemon",
+    "lint": "node_modules/.bin/eslint src/**/*.js",
+    "lint:fix": "npm run lint -- --fix",
+    "precommit": "npm run lint:fix",
+    "docker": "npm run docker:build && npm run docker:start",
+    "docker:build": "docker build -t todo-api:latest --file ./docker/Dockerfile .",
+    "docker:start": "docker run --name todo-api -p 3000:3000 -d --env-file .env todo-api:latest",
+    "docker:stop": "docker stop todo-api && docker rm -f $(docker ps -f \"name=todo-api\" -a -q)"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-plugin-syntax-async-functions": "^6.13.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-register": "^6.26.0",
+    "babel-watch": "^2.0.7",
+    "chai": "^4.1.2",
+    "eslint": "^4.16.0",
+    "husky": "^0.14.3",
+    "mocha": "^5.0.0",
+    "nodemon": "^1.14.11",
+    "supertest": "3.0.0"
+  },
+  "dependencies": {
+    "bcryptjs": "2.4.3",
+    "body-parser": "^1.18.2",
+    "compression": "^1.7.1",
+    "dotenv": "^4.0.0",
+    "express": "^4.16.2",
+    "helmet": "^3.10.0",
+    "jsonwebtoken": "^8.1.1",
+    "mongoose": "^5.0.1",
+    "pm2": "^2.9.3",
+    "response-time": "^2.3.2",
+    "rimraf": "^2.6.2",
+    "shortid": "^2.2.8"
+  }
+}
