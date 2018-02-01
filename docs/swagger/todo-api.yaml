@@ -1,0 +1,360 @@
+swagger: '2.0'
+info:
+  description: ToDo API Documentation
+  version: 1.0.0
+  title: ToDo API
+  termsOfService: 'http://swagger.io/terms/'
+  contact:
+    email: douglas.expalves@gmail.com
+host: '0.0.0.0:3000'
+basePath: /api/v1
+tags:
+  - name: users
+    description: Operations about users
+  - name: tasks
+    description: Operations about tasks
+schemes:
+  - http
+produces:
+  - application/json
+paths:
+  /users:
+    post:
+      tags:
+        - users
+      summary: Create user
+      operationId: createUser
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: user object
+          required: true
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              name:
+                type: string
+              password:
+                type: string
+                format: password
+      responses:
+        '201':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        default:
+          description: an error ocurred
+          schema:
+            $ref: '#/definitions/Error'
+  /users/session:
+    post:
+      tags:
+        - users
+      summary: Logs user into the system
+      description: 'Logs user into the system'
+      operationId: loginUser
+      produces:
+        - application/json
+      parameters:
+        - name: username
+          in: query
+          description: The user name for login
+          required: true
+          type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: string
+          headers:
+            Authorization:
+              type: string
+              format: string
+              description: jwt token
+        '400':
+          description: Invalid username/password supplied
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: an error ocurred
+          schema:
+            $ref: '#/definitions/Error'
+  /tasks:
+    post:
+      tags:
+        - tasks
+      summary: Create task
+      operationId: createTask
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          description: Jwt
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Task object
+          required: true
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+              description:
+                type: string
+      responses:
+        '201':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Task'
+        default:
+          description: an error ocurred
+          schema:
+            $ref: '#/definitions/Error'
+  '/tasks/{_id}':
+    delete:
+      tags:
+        - tasks
+      summary: Delete task
+      operationId: deleteTask
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          description: Jwt
+          required: true
+          type: string
+        - in: path
+          name: _id
+          description: id of the task
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                default: true
+        default:
+          description: an error ocurred
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      tags:
+        - tasks
+      summary: Update task
+      operationId: updateTask
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          description: Jwt
+          required: true
+          type: string
+        - in: path
+          name: _id
+          description: id of the task
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Task object
+          required: true
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+              description:
+                type: string
+              done:
+                type: boolean
+                default: false
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                default: true
+        default:
+          description: an error ocurred
+          schema:
+            $ref: '#/definitions/Error'
+  '/tasks/{task}/author/{author}':
+    get:
+      tags:
+        - tasks
+      summary: Get One task from the user
+      operationId: getOneTask
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          description: Jwt
+          required: true
+          type: string  
+        - in: path
+          name: task
+          description: _id of the task
+          required: true
+          type: string
+        - in: path
+          name: author
+          description: _id of the author
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Task'
+        default:
+          description: an error ocurred
+          schema:
+            $ref: '#/definitions/Error'  
+  '/tasks/author/{author}':
+    get:
+      tags:
+        - tasks
+      summary: Get All user tasks
+      operationId: getAllTasks
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          description: Jwt
+          required: true
+          type: string
+        - in: path
+          name: author
+          description: _id of the user
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Task'
+        default:
+          description: an error ocurred
+          schema:
+            $ref: '#/definitions/Error'
+  '/tasks/{task}/status/{done}':
+    patch:
+      tags:
+        - tasks
+      summary: Get One task from the user
+      operationId: updateTaskStatus
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          description: Jwt
+          required: true
+          type: string
+        - in: path
+          name: task
+          description: _id of the task
+          required: true
+          type: string
+        - in: path
+          name: done
+          description: _id of the author
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Task'
+        default:
+          description: an error ocurred
+          schema:
+            $ref: '#/definitions/Error' 
+definitions:
+  User:
+    type: object
+    properties:
+      _id:
+        type: string
+        description: ShortId generated Id of the user
+      name:
+        type: string
+        description: Name of the user
+      username:
+        type: string
+        description: Username of the user
+      password:
+        type: string
+        description: Password of the user
+      createdAt:
+        type: string
+        description: Creation date of the user data
+      updatedAt:
+        type: string
+        description: Last update date of the user data
+  Task:
+    type: object
+    properties:
+      _id:
+        type: string
+        description: ShortId generated Id of the task
+      title:
+        type: string
+        description: Title of the task
+      description:
+        type: string
+        description: Description of the task
+      done:
+        type: boolean
+        default: false
+        description: Status of the task
+      author:
+        type: string
+        description: _id of the user that created the task 
+      createdAt:
+        type: string
+        description: Creation date of the task
+      updatedAt:
+        type: string
+        description: Last update date of the task
+  Error:
+    type: object
+    properties:
+      code:
+        type: string
+        description: String code of the error
+      message:
+        type: string
+        description: Message of the error
+      status:
+        type: integer
+        format: int32
+        description: Http status of the error
+externalDocs:
+  description: Find out more about Swagger
+  url: 'http://swagger.io'
