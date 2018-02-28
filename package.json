@@ -20,8 +20,7 @@
     "prod": "./node_modules/.bin/pm2 start ./dist/loader.js --name ToDoAPI",
     "dev": "./node_modules/.bin/nodemon",
     "lint": "node_modules/.bin/eslint src/**/*.js",
-    "lint:fix": "npm run lint -- --fix",
-    "precommit": "npm run lint:fix"
+    "lint:fix": "npm run lint -- --fix"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
