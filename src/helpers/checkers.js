@@ -36,8 +36,8 @@ const sessionCheckers = (req, res, next) => {
 			status: 400
 		})
 	}
-  
-	next(Jwt.decodeToken(authorization))
+	req.userSession = Jwt.decodeToken(authorization)
+	next()
 }
 
 const loginCheckers = (req, res, next) => {

@@ -18,14 +18,12 @@ const findUserById = ({ _id }) => {
   })
 }
 
-const startSession = ({ username, password }) => {
+const findByEmail = ({ email : String }) => {
   return new Promise((resolve, reject) => {
-    const hash = Crypto.createBcryptHash(password)
-    user.findOne({ username, password: hash })
+    user.findOne({ email })
       .then((data) => {
         if (data) {
-          const token = Jwt.createToken({ _id: data._id })
-          return resolve({ token })
+          return resolve(data)
         }
         throw new Error('not found')
       })
@@ -35,14 +33,34 @@ const startSession = ({ username, password }) => {
   })
 }
 
-const verifyDuplication = ({ username }) => {
+const startSession = ({ email, password }) => {
   return new Promise((resolve, reject) => {
-    user.findOne({ username })
+    user.findOne({ email })
+      .select('+password')
+      .then(data => {
+        if (data) {
+          if (Crypto.compareBcrypt(password, data.password)) {
+            const token = Jwt.createToken({ _id: data._id })
+            return resolve({ token })
+          }
+          throw new Error('incorrect session')
+        }
+        throw new Error('not found')
+      })
+      .catch(err => {
+        return reject(errorTreater(err.message))
+      })
+  })
+}
+
+const verifyDuplication = ({ email }) => {
+  return new Promise((resolve, reject) => {
+    user.findOne({ email })
       .then((data) => {
         if (!data) {
           return resolve({ notFound: true })
         }
-        throw new Error('duplicate username')
+        throw new Error('duplicate email')
       })
       .catch((err) => {
         return reject(err)
@@ -50,15 +68,16 @@ const verifyDuplication = ({ username }) => {
   })
 }
 
-const createUser = ({ name, username, password }) => {
+const createUser = ({ name, email, password }) => {
   return new Promise((resolve, reject) => {
-    verifyDuplication({ username })
-      .then((data) => {     
+    verifyDuplication({ email })
+      .then((data) => {
         const hash = Crypto.createBcryptHash(password)
-        user.create({ name, username, password: hash })
+        user.create({ name, email, password: hash })
           .then((newUser) => {
             if (newUser) {
-              return resolve(newUser)
+              const token = Jwt.createToken({ _id: newUser._id })
+              return resolve({ user: newUser, token })
             }
 
             throw new Error('create error')
@@ -73,4 +92,33 @@ const createUser = ({ name, username, password }) => {
   })
 }
 
-export { startSession, createUser }
+const updateTokenAndExpiration = ({ _id: String }, { tokenPassword: String, tokenExpiration: String }) => {
+  return new Promise((resolve, reject) => {
+    user.findByIdAndUpdate(_id, {
+      '$set': {
+        tokenPassword,
+        tokenExpiration
+      }
+    })
+      .then(() => {
+        return resolve({ sucess: true })
+      })
+      .catch((err) => {
+        return reject(errorTreater(err.message))
+      })
+  })
+}
+
+const findUserAndSelect = ({ email: String }, { select: String }) => {
+  return new Promise((resolve, reject) => {
+    user.findOne({ email })
+      .select(select)
+      .then((data) => {
+        if (!data) throw new Error('not found')
+        return resolve(data)
+      })
+      .catch((err) => reject(errorTreater(err.message)))
+  })
+}
+
+export { startSession, createUser, findByEmail, updateTokenAndExpiration, findUserAndSelect }
