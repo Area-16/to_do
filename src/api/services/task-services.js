@@ -4,11 +4,11 @@ import { errorTreater } from './../../helpers/treater'
 
 const findByAuthor = ({ author }) => {
   return new Promise((resolve, reject) => {
-    task.find({ author })
+    task.find({ author }).populate('author')
     .sort({ createdAt: 'desc' })
     .then((data) => {
       if (data.length) return resolve(data)
-      
+
       throw new Error('not found')
     })
     .catch((err) => {
@@ -33,10 +33,10 @@ const createTask = ({ title, description, author }) => {
 
 const getOneTask = ({ _id, author }) => {
   return new Promise((resolve, reject) => {
-    task.find({ _id, author })
+    task.find({ _id, author }).populate('author')
       .then((data) => {
         if (!data.length) throw new Error('not found')
-        
+
         return resolve(data)
       })
       .catch((err) => {
@@ -66,7 +66,7 @@ const updateTaskStatus = ({ _id, done }) => {
     task.findByIdAndUpdate(_id, { done }, { new: true })
       .then((data) => {
         if (data) return resolve(data)
-  
+
         throw new Error('not found')
       })
       .catch((err) => {
@@ -80,7 +80,7 @@ const updateTask = ({ _id, title, description, done }) => {
     task.findByIdAndUpdate(_id, { title, description, done: done || 0 }, { new: true })
       .then((data) => {
         if (data) return resolve(data)
-  
+
         throw new Error('not found')
       })
       .catch((err) => {
