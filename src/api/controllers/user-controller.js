@@ -120,7 +120,7 @@ routing.post('/v1/forgot_password', async (req, res) => {
 routing.patch('/v1/reset_password', async (req, res) => {
   const { email, password, token } = req.body
 
-  findUserAndSelect({ email }, select: '+tokenPassword tokenExpiration' })
+  findUserAndSelect({ email }, { select: '+tokenPassword tokenExpiration' })
     .then(data => {
       const resetStatus = resetToken({ clientToken: token, dbToken: data.tokenPassword, expiration: data.tokenExpiration })
       if (resetStatus !== true) {

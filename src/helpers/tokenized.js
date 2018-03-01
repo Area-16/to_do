@@ -1,4 +1,4 @@
-export function resetToken ({ clientToken: String, dbToken: String, expiration: String }) {
+export function resetToken ( clientToken, dbToken, expiration ) {
   if (Date() > expiration) {
     return { message: 'Your token timer has expired, generate a new one', status: 400, code: 'PASS_TOKEN_EXPIRED' }
   }

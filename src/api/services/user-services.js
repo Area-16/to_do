@@ -18,7 +18,7 @@ const findUserById = ({ _id }) => {
   })
 }
 
-const findByEmail = ({ email : String }) => {
+const findByEmail = ({ email }) => {
   return new Promise((resolve, reject) => {
     user.findOne({ email })
       .then((data) => {
@@ -92,7 +92,7 @@ const createUser = ({ name, email, password }) => {
   })
 }
 
-const updateTokenAndExpiration = ({ _id: String }, { tokenPassword: String, tokenExpiration: String }) => {
+const updateTokenAndExpiration = ({ _id }, { tokenPassword, tokenExpiration }) => {
   return new Promise((resolve, reject) => {
     user.findByIdAndUpdate(_id, {
       '$set': {
@@ -109,7 +109,7 @@ const updateTokenAndExpiration = ({ _id: String }, { tokenPassword: String, toke
   })
 }
 
-const findUserAndSelect = ({ email: String }, { select: String }) => {
+const findUserAndSelect = ({ email }, { select }) => {
   return new Promise((resolve, reject) => {
     user.findOne({ email })
       .select(select)
