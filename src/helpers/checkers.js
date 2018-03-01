@@ -1,8 +1,8 @@
 import Jwt from './jwt'
 
 const userCheckers = (req, res, next) => {
-	const { name, username, password } = req.body
-	if (!name || !username || !password) {
+	const { name, email, password } = req.body
+	if (!name || !email || !password) {
 		return res.status(400).send({
 			data: {
 				message: 'missing data from the payload',
@@ -41,9 +41,9 @@ const sessionCheckers = (req, res, next) => {
 }
 
 const loginCheckers = (req, res, next) => {
-	const { username, password } = req.body
+	const { email, password } = req.body
 
-	if (!username || !password) {
+	if (!email || !password) {
 		return res.status(400).send({
 			data: {
 				message: 'missing data from the payload',
