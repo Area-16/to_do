@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 
 import { errorTreater } from './../src/helpers/treater'
+import { errorMsgMounter } from './../src/helpers/treater'
 
 describe('Treater:::', () => {
   let error
@@ -36,6 +37,33 @@ describe('Treater:::', () => {
     error = errorTreater('unknown error')
     expect(error.status).to.be.equal(500)
     expect(error.code).to.be.equal('UNEXPECTED_ERR')
+    done()
+  })
+
+  it('should return a treated response with status 500 and code UNEXPECTED_ERR when function its called empty', (done) => {
+    error = errorTreater()
+    expect(error.status).to.be.equal(500)
+    expect(error.code).to.be.equal('UNEXPECTED_ERR')
+    done()
+  })
+})
+
+describe('Mounter:::', () => {
+  it('should mount error messages with the data provided', (done) => {
+    const errMsg = errorMsgMounter('Error test message', ' test', 500)
+    expect(errMsg.message).to.be.equal('Error test message')
+    expect(errMsg.code).to.be.equal('TEST')
+    expect(errMsg.status).to.be.equal(500)
+
+    done()
+  })
+
+  it('should mount default error message if the data is not provided', (done) => {
+    const errMsg = errorMsgMounter()
+    expect(errMsg.message).to.be.equal('Unknown error ocurred')
+    expect(errMsg.code).to.be.equal('UNKNOWN_ERR')
+    expect(errMsg.status).to.be.equal(500)
+
     done()
   })
 })
