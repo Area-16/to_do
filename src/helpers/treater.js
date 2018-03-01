@@ -49,11 +49,9 @@ export function errorTreater(message) {
 
 export function errorMsgMounter ( message = 'Unknown error ocurred', code = 'UNKNOWN_ERR', status = 500 ) {
 	const error = {
-		data: {
-			message,
-			code,
-		},
-		status
+		message: message,
+		code: code.toString().trim().toUpperCase(),
+		status: Number(status)
 	}
 
 	return error
